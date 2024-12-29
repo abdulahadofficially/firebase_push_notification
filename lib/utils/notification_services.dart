@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:app_settings/app_settings.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_notification_practice/screens/message_screen.dart';
@@ -14,6 +13,7 @@ class NotificationServices {
   static FlutterLocalNotificationsPlugin notificationsPlugin = FlutterLocalNotificationsPlugin();
 
   // Step 2: Request Notification Permissions
+  // This function requests permission from the user to show notifications
   static Future<bool> permissionRequest() async {
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
@@ -36,6 +36,7 @@ class NotificationServices {
   }
 
   // Step 3: Retrieve FCM Token
+  // Retrieves the Firebase Cloud Messaging (FCM) token to uniquely identify the device for push notifications
   static Future<String> getFCMToken() async {
     String? token = await messaging.getToken();
     debugPrint('Device Token: $token');
@@ -43,6 +44,7 @@ class NotificationServices {
   }
 
   // Step 4: Configure Local Notifications
+  // Initializes local notifications for the app (Android and iOS configurations)
   static void initFlutterLocalNotification(BuildContext context, RemoteMessage message) {
     var android = const AndroidInitializationSettings('@mipmap/ic_launcher');
     var ios = const DarwinInitializationSettings();
@@ -58,6 +60,7 @@ class NotificationServices {
   }
 
   // Step 5: Listen for Foreground Notifications
+  // Listens for messages when the app is in the foreground (active in the background)
   static void firebaseInit(BuildContext context) {
     FirebaseMessaging.onMessage.listen((message) {
       debugPrint('Received message: ${message.data}');
@@ -68,6 +71,7 @@ class NotificationServices {
   }
 
   // Step 6: Display Notifications
+  // Displays the notification to the user with the details from the message
   static Future<void> showNotification(RemoteMessage message) async {
     AndroidNotificationChannel androidNotificationChannel =
         AndroidNotificationChannel(Random.secure().nextInt(10).toString(), 'High Importance Notification', importance: Importance.max);
@@ -98,6 +102,7 @@ class NotificationServices {
   }
 
   // Step 7: Handle Notification Clicks
+  // Handles the notification click and navigates to the relevant screen
   static void handleMessage(BuildContext context, RemoteMessage message) {
     if (message.data['type'] == 'message') {
       Navigator.push(context, MaterialPageRoute(builder: (context) => const MessageScreen()));
@@ -105,6 +110,7 @@ class NotificationServices {
   }
 
   // Step 8: Handle Background and Terminated States
+  // This method handles messages when the app is in the background or terminated (when the app is not active)
   static Future<void> setupInteractMessage(BuildContext context) async {
     // When the app is terminated
     RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
